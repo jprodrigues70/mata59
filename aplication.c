@@ -47,6 +47,9 @@ void read_message() {
   verify_quit(header.message);
 }
 
+//parametro: ex: meuchat <ip> <porta> <tamanho> //validação
+//definir regras de limitação de caractere e sintaxe: posso dizer q só aceita letra :)
+
 void get_message_length() {
   int length = strlen(header.message);
   header.content_length = length;
@@ -79,8 +82,21 @@ void print_header() {
   printf("Content-Type: %s\n", header.content_type);
 }
 
+void transformaTextoParaBinario() {
+	//TODO
+} 
+
+void transformaBinarioEmTexto() {
+	//TODO
+} 
+
+void enviarParaTransporte() {
+	//aplicação solicita conexão
+	//TODO
+}
+
 void receive_data(app_header received_header) {
-  // TODO: This function receives data from server;
+  // TODO: This function receives data from server; - recebe de transporte
 }
 
 void start_app() {
@@ -93,3 +109,12 @@ void start_app() {
     mount_header();
   }
 }
+
+//chat simples ??broadcast - determinar endereco
+//tratamento de recebimento de pacotes. pode pedir reenvio de pacote não recebido
+//definir tamanho máximo de pacote - pode ser variável baseado no meio físico (pode ser restritivo) - segmentação
+//tvz udp não seja ideal. entrega-receber necessario. meios de conferir chegada dos pacotes.
+//configuração: usuário coloca ip e porta de destino
+//estabelecimento de conexão.
+//cabeçalho camada de transporte.
+//checksum - contar apenas 0 e 1. bit de paridade (decidir se em enlace-bit bit bit- ou transporte)
