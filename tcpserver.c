@@ -37,9 +37,12 @@ void autoResponse(char* text) {
   } else if (strcmp(text, "que horas são?\n") == 0) {
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
-    char* buffer = asctime (timeinfo);
-    sendMessage(buffer);
+    char buffer[7];
+    strftime(buffer, 7, "%H:%M", timeinfo);
     printf("Mensagem automática \"%s\" enviada.\n", buffer);
+    sendMessage(strcat(buffer, "\n"));
+  } else if (strcmp(text, "obrigado\n") == 0) {
+    
   }
 }
 

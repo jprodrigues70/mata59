@@ -23,6 +23,7 @@ void * receiveMessage(void * socket) {
   ret = recvfrom(sockfd, buffer, BUF_SIZE, 0, NULL, NULL);
   if (ret < 0) {
    printf("Erro ao receber mensagens!\n");
+   exit(1);
   } else {
    printf("Servidor: ");
    fputs(buffer, stdout);
@@ -44,6 +45,7 @@ connectToServer() {
    printf("Erro ao conectar com o servidor!\n");
    exit(1);
   }
+
   printf("Conectado.\n");
 }
 
