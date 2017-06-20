@@ -77,6 +77,9 @@ messageMachine() {
   }
 
   while (fgets(buffer, BUF_SIZE, stdin) != NULL) {
+
+    if (strcmp(buffer, "obrigado\n") == 0) exit(1);
+
     ret = sendto(sockfd, buffer, BUF_SIZE, 0, (struct sockaddr *) &addr, sizeof(addr));
     if (ret < 0) printf("Erro ao enviar mensagem!\n\t-%s", buffer);
   }

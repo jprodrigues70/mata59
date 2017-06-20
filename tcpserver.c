@@ -16,6 +16,8 @@ int sockfd, len, ret, newsockfd;
 time_t rawtime;
 struct tm * timeinfo;
 
+int state = 0;
+
 void listenConnection();
 void messageMachine();
 
@@ -28,21 +30,41 @@ void sendMessage(char* buffer) {
 }
 
 void autoResponse(char* text) {
+  char* response;
+
+  time ( &rawtime );
+  timeinfo = localtime ( &rawtime );
+  char buffer[7];
+  char shour[3];
+  strftime(buffer, 7, "%H:%M", timeinfo);
+  strftime(shour, 3, "%H", timeinfo);
+  int hour = atoi(shour);
+
   for (char *p = text; *p; ++p) *p = *p >= 'A' && *p <='Z' ? *p|0x60 : *p;
 
-  if (strcmp(text, "boa tarde\n") == 0 || strcmp(text, "bom dia\n") == 0 || strcmp(text, "boa noite\n") == 0) {
-    text[0] = ('a' <= text[0] && text[0] <= 'z') ? text[0]^0x20 : text[0];
-    sendMessage(text);
+  if ((strcmp(text, "boa tarde\n") == 0 || strcmp(text, "bom dia\n") == 0 || strcmp(text, "boa noite\n") == 0) && state == 0) {
+
+    if (hour < 12) strcpy(response, "bom dia\n");
+    else if (hour < 18) strcpy(response, "boa tarde\n");
+    else strcpy(response, "boa noite\n");
+
+    if (strcmp(response, text) != 0) {
+        strcpy(text, "Você se confundiu com o horário.\n");
+        sendMessage(text);
+    }
+
+    response[0] = ('a' <= response[0] && response[0] <= 'z') ? response[0]^0x20 : response[0];
+
+    sendMessage(response);
     printf("Mensagem automática \"%s\" enviada.\n", text);
-  } else if (strcmp(text, "que horas são?\n") == 0) {
-    time ( &rawtime );
-    timeinfo = localtime ( &rawtime );
-    char buffer[7];
-    strftime(buffer, 7, "%H:%M", timeinfo);
+    state++;
+  } else if (strcmp(text, "que horas são?\n") == 0 && state > 0) {
     printf("Mensagem automática \"%s\" enviada.\n", buffer);
     sendMessage(strcat(buffer, "\n"));
-  } else if (strcmp(text, "obrigado\n") == 0) {
-    
+  } else if (state == 0) {
+    printf("Mensagem automática enviada: O protocolo foi iniciado de forma incorreta. (Opoções: bom dia, boa tarde, boa noite)\n");
+    sendMessage("O protocolo foi iniciado de forma incorreta. (Opoções: bom dia, boa tarde, boa noite)\n");
+
   }
 }
 
@@ -60,6 +82,7 @@ void * receiveMessage(void * socket) {
       fputs(buffer, stdout);
       autoResponse(buffer);
     } else {
+      state = 0;
       printf("Todos os clientes estão desconectados\n");
       listenConnection();
       messageMachine();
